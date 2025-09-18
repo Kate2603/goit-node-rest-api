@@ -64,6 +64,12 @@ curl -X DELETE http://localhost:3000/api/contacts/<id>
 
 ![alt text](img/5.jpg)
 
+6. Як перевірити всі id контактів Через GET /api/contacts
+
+curl http://localhost:3000/api/contacts
+
+![alt text](img/7.jpg)
+
 ## Як імпортувати в Postman для перевірки запитів
 
 Відкрий Postman.
