@@ -1,43 +1,34 @@
-const fs = require("fs/promises");
-const path = require("path");
-const { nanoid } = require("nanoid");
-
-const contactsPath = path.resolve("models", "contacts.json");
+const Contact = require("../models/contact");
 
 async function listContacts() {
-  const data = await fs.readFile(contactsPath, "utf8");
-  return JSON.parse(data);
+  return await Contact.findAll();
 }
 
 async function getContactById(id) {
-  const contacts = await listContacts();
-  return contacts.find((item) => item.id === id) || null;
+  return await Contact.findByPk(id);
 }
 
 async function removeContact(id) {
-  const contacts = await listContacts();
-  const index = contacts.findIndex((item) => item.id === id);
-  if (index === -1) return null;
-  const [removed] = contacts.splice(index, 1);
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-  return removed;
+  const contact = await Contact.findByPk(id);
+  if (!contact) return null;
+  await contact.destroy();
+  return contact;
 }
 
 async function addContact(data) {
-  const contacts = await listContacts();
-  const newContact = { id: nanoid(), ...data };
-  contacts.push(newContact);
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-  return newContact;
+  return await Contact.create(data);
 }
 
 async function updateContact(id, data) {
-  const contacts = await listContacts();
-  const index = contacts.findIndex((item) => item.id === id);
-  if (index === -1) return null;
-  contacts[index] = { ...contacts[index], ...data };
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-  return contacts[index];
+  const contact = await Contact.findByPk(id);
+  if (!contact) return null;
+  return await contact.update(data);
+}
+
+async function updateStatusContact(id, data) {
+  const contact = await Contact.findByPk(id);
+  if (!contact) return null;
+  return await contact.update({ favorite: data.favorite });
 }
 
 module.exports = {
@@ -46,4 +37,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  updateStatusContact,
 };
