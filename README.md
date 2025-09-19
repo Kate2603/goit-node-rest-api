@@ -14,70 +14,72 @@ npm start
 
 npm run dev
 
+Структура проекту
+
 ![alt text](img/1.jpg)
 
 ### Ендпоінти для перевірки
 
-## Відкрий інший термінал і зроби кілька запитів:
+## Відкрий інший термінал і зроби кілька запитів
 
-1. GET /api/contacts
+# Перевірка API через Postman (зручніше для перевірки)
 
-Отримати всі контакти
+Відкрий Postman
 
-curl http://localhost:3000/api/contacts
+Імпортуй колекцію contacts_api.postman_collection.json
+
+Там є готові запити:
+
+GET /api/contacts
 
 ![alt text](img/2.jpg)
 
-2. GET /api/contacts/:id
-
-Отримати контакт за id
-
-curl http://localhost:3000/api/contacts/<id>
+GET /api/contacts/:id
 
 ![alt text](img/3.jpg)
 
-3. POST /api/contacts
-
-Створити новий контакт
-
-curl -X POST http://localhost:3000/api/contacts \
--H "Content-Type: application/json" \
--d '{"name":"Alice","email":"alice@example.com","phone":"1234567"}'
+POST /api/contacts
 
 ![alt text](img/4.jpg)
 
-4. PUT /api/contacts/:id
-
-Оновити контакт
-
-curl -X PUT http://localhost:3000/api/contacts/<id> \
--H "Content-Type: application/json" \
--d '{"phone":"999-111"}'
-
-![alt text](img/6.jpg)
-
-5. DELETE /api/contacts/:id
-
-Видалити контакт
-
-curl -X DELETE http://localhost:3000/api/contacts/<id>
+PUT /api/contacts/:id
 
 ![alt text](img/5.jpg)
 
-6. Як перевірити всі id контактів Через GET /api/contacts
+PATCH /api/contacts/:id/favorite
 
-curl http://localhost:3000/api/contacts
+![alt text](img/6.jpg)
+
+DELETE /api/contacts/:id
 
 ![alt text](img/7.jpg)
 
-## Як імпортувати в Postman для перевірки запитів
+Запускай по черзі і дивись у відповідь (Response).
 
-Відкрий Postman.
+# Перевірка API через curl (альтернатива Postman)
 
-У верхньому меню натисни Import.
+У терміналі (Git Bash або PowerShell):
 
-Обери файл contacts-api.postman_collection.json.
+Отримати всі контакти:
+curl http://localhost:3000/api/contacts
 
-Тепер у тебе з’явиться колекція Contacts REST API.
+Додати контакт:
+curl -X POST http://localhost:3000/api/contacts \
+ -H "Content-Type: application/json" \
+ -d '{"name":"Alice","email":"alice@example.com","phone":"123-456"}'
 
-Для перевірки GET /:id, PUT /:id, DELETE /:id заміни значення змінної {{contactId}} на реальний id з бази.
+Отримати за ID (підстав свій id):
+curl http://localhost:3000/api/contacts/1
+
+Оновити весь контакт:
+curl -X PUT http://localhost:3000/api/contacts/1 \
+ -H "Content-Type: application/json" \
+ -d '{"name":"Alice Updated","email":"alice2@example.com","phone":"555-999"}'
+
+Оновити тільки favorite (Крок 4):
+curl -X PATCH http://localhost:3000/api/contacts/1/favorite \
+ -H "Content-Type: application/json" \
+ -d '{"favorite": true}'
+
+Видалити контакт:
+curl -X DELETE http://localhost:3000/api/contacts/1
