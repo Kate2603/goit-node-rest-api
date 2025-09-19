@@ -1,8 +1,8 @@
 {
     "info": {
-        "name": "Contacts REST API",
-        "_postman_id": "a1b2c3d4-e5f6-7890-abcd-1234567890ab",
-        "description": "Колекція для перевірки REST API з ДЗ (Тема 4)",
+        "name": "Contacts API (Sequelize + PostgreSQL)",
+        "_postman_id": "b1e0c0a1-1234-5678-9abc-def123456789",
+        "description": "Postman collection для перевірки CRUD-запитів до REST API",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -31,7 +31,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                    "raw": "http://localhost:3000/api/contacts/{{contactId}}",
+                    "raw": "http://localhost:3000/api/contacts/1",
                     "protocol": "http",
                     "host": [
                         "localhost"
@@ -40,13 +40,13 @@
                     "path": [
                         "api",
                         "contacts",
-                        "{{contactId}}"
+                        "1"
                     ]
                 }
             }
         },
         {
-            "name": "Create new contact",
+            "name": "Add new contact",
             "request": {
                 "method": "POST",
                 "header": [
@@ -57,7 +57,7 @@
                 ],
                 "body": {
                     "mode": "raw",
-                    "raw": "{\n  \"name\": \"Alice\",\n  \"email\": \"alice@example.com\",\n  \"phone\": \"1234567\"\n}"
+                    "raw": "{\n  \"name\": \"Alice\",\n  \"email\": \"alice@example.com\",\n  \"phone\": \"123-456\"\n}"
                 },
                 "url": {
                     "raw": "http://localhost:3000/api/contacts",
@@ -85,10 +85,10 @@
                 ],
                 "body": {
                     "mode": "raw",
-                    "raw": "{\n  \"phone\": \"999-111\"\n}"
+                    "raw": "{\n  \"name\": \"Alice Updated\",\n  \"email\": \"alice2@example.com\",\n  \"phone\": \"555-999\"\n}"
                 },
                 "url": {
-                    "raw": "http://localhost:3000/api/contacts/{{contactId}}",
+                    "raw": "http://localhost:3000/api/contacts/1",
                     "protocol": "http",
                     "host": [
                         "localhost"
@@ -97,7 +97,37 @@
                     "path": [
                         "api",
                         "contacts",
-                        "{{contactId}}"
+                        "1"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Update favorite status",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"favorite\": true\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3000/api/contacts/1/favorite",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "contacts",
+                        "1",
+                        "favorite"
                     ]
                 }
             }
@@ -108,7 +138,7 @@
                 "method": "DELETE",
                 "header": [],
                 "url": {
-                    "raw": "http://localhost:3000/api/contacts/{{contactId}}",
+                    "raw": "http://localhost:3000/api/contacts/1",
                     "protocol": "http",
                     "host": [
                         "localhost"
@@ -117,16 +147,10 @@
                     "path": [
                         "api",
                         "contacts",
-                        "{{contactId}}"
+                        "1"
                     ]
                 }
             }
-        }
-    ],
-    "variable": [
-        {
-            "key": "contactId",
-            "value": "abc123"
         }
     ]
 }

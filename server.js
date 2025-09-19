@@ -1,5 +1,13 @@
 const app = require("./app");
+const { connectDB, sequelize } = require("./db");
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
-});
+async function startServer() {
+  await connectDB();
+  await sequelize.sync();
+
+  app.listen(3000, () => {
+    console.log("Server running on port 3000");
+  });
+}
+
+startServer();
