@@ -56,30 +56,40 @@ DELETE /api/contacts/:id
 
 Запускай по черзі і дивись у відповідь (Response).
 
-# Перевірка API через curl (альтернатива Postman)
+## Postman-запити для Auth API
 
-У терміналі (Git Bash або PowerShell):
+# Реєстрація (Register)
 
-Отримати всі контакти:
-curl http://localhost:3000/api/contacts
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
 
-Додати контакт:
-curl -X POST http://localhost:3000/api/contacts \
- -H "Content-Type: application/json" \
- -d '{"name":"Alice","email":"alice@example.com","phone":"123-456"}'
+![alt text](img/8.jpg)
 
-Отримати за ID (підстав свій id):
-curl http://localhost:3000/api/contacts/1
+# Логін (Login)
 
-Оновити весь контакт:
-curl -X PUT http://localhost:3000/api/contacts/1 \
- -H "Content-Type: application/json" \
- -d '{"name":"Alice Updated","email":"alice2@example.com","phone":"555-999"}'
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
 
-Оновити тільки favorite (Крок 4):
-curl -X PATCH http://localhost:3000/api/contacts/1/favorite \
- -H "Content-Type: application/json" \
- -d '{"favorite": true}'
+![alt text](img/9.jpg)
 
-Видалити контакт:
-curl -X DELETE http://localhost:3000/api/contacts/1
+# Поточний користувач (Current User)
+
+GET http://localhost:3000/api/auth/current
+Authorization: Bearer JWT_TOKEN
+
+![alt text](img/10.jpg)
+
+# Логаут (Logout)
+
+POST http://localhost:3000/api/auth/logout
+Authorization: Bearer JWT_TOKEN
+
+![alt text](img/11.jpg)
+
+# Додатково: Оновлення підписки (Update Subscription)
+
+PATCH http://localhost:3000/api/auth/subscription
+Authorization: Bearer JWT_TOKEN
+Content-Type: application/json
+
+![alt text](img/12.jpg)
