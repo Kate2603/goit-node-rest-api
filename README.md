@@ -1,4 +1,4 @@
-# Інструкція для перевірки ДЗ: REST API (Тема 7)
+# Інструкція для перевірки ДЗ: REST API(4), PostgresSQL та Sequelize(6), Аутентифікація та авторизація(7), Робота з файлами та тестування додатків(9)
 
 ## Як запустити проєкт
 
@@ -13,6 +13,10 @@ npm start
 або в режимі розробки (якщо додав nodemon):
 
 npm run dev
+
+### Якщо сервер працює коректно, тоді запускємо тести
+
+npm test
 
 Структура проекту
 
@@ -86,10 +90,40 @@ Authorization: Bearer JWT_TOKEN
 
 ![alt text](img/11.jpg)
 
-# Додатково: Оновлення підписки (Update Subscription)
+# Оновлення підписки (Update Subscription)
 
 PATCH http://localhost:3000/api/auth/subscription
 Authorization: Bearer JWT_TOKEN
 Content-Type: application/json
 
 ![alt text](img/12.jpg)
+
+### Тестування Auth + Avatar API через Postman
+
+1. Реєстрація користувача
+   POST `http://localhost:3000/api/auth/register`  
+   Content-Type: application/json
+
+   ![alt text](img/13.jpg)
+
+2. Логін користувача
+   POST http://localhost:3000/api/auth/login
+   Content-Type: application/json
+
+   ![alt text](img/14.jpg)
+
+3. Отримання поточного користувача
+   GET http://localhost:3000/api/auth/current
+
+   ![alt text](img/15.jpg)
+
+4. Оновлення аватарки
+   PATCH http://localhost:3000/api/auth/avatars
+
+   ![alt text](img/16.jpg)
+
+# Тести C:\Users\user\Documents\GitHub\goit-node-rest-api\_\_tests\_\_\auth.test.js
+
+![alt text](img/17.jpg)
+
+![alt text](img/18.jpg)
