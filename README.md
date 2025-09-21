@@ -1,4 +1,4 @@
-# Інструкція для перевірки ДЗ: REST API(4), PostgresSQL та Sequelize(6), Аутентифікація та авторизація(7), Робота з файлами та тестування додатків(9)
+# Інструкція для перевірки ДЗ: REST API(4), PostgresSQL та Sequelize(6), Аутентифікація та авторизація(7), Робота з файлами та тестування додатків(9), Websockets(11)
 
 ## Як запустити проєкт
 
@@ -122,7 +122,48 @@ Content-Type: application/json
 
    ![alt text](img/16.jpg)
 
-# Тести C:\Users\user\Documents\GitHub\goit-node-rest-api\_\_tests\_\_\auth.test.js
+### Email verification + REST API
+
+Зміна БД, додалося 2 колонки
+
+![alt text](img/24.jpg)
+
+### Email verification flow
+
+![alt text](img/23.jpg)
+
+1. POST /api/auth/register — створення користувача, генерується verificationToken, надсилається лист з посиланням.
+
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+![alt text](img/19.jpg)
+
+2. GET /api/auth/verify/:verificationToken — верифікація email
+
+GET http://localhost:3000/api/auth/verify/{{verificationToken}}
+
+![alt text](img/20.jpg)
+
+3. POST /api/auth/verify — повторна відправка листа з токеном
+   POST http://localhost:3000/api/auth/verify
+   Content-Type: application/json
+   Якщо вже верифіковано → 400 Bad Request { "message": "Verification has already been passed" }
+
+   ![alt text](img/21.jpg)
+
+4. POST /api/auth/login — логін тільки після верифікації
+
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+![alt text](img/22.jpg)
+
+# Тести (**tests**/auth.test.js) проходять
+
+Написані unit-тести (Jest) для контролера логіна.
+
+Усі тести проходять успішно
 
 ![alt text](img/17.jpg)
 
