@@ -1,0 +1,134 @@
+{
+    "info": {
+        "name": "Contacts Auth Tests",
+        "_postman_id": "22334455-6677-8899-aabb-ccddee112233",
+        "description": "Collection to test contacts API with owner and auth protection",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "GET Contacts (no token → 401)",
+            "request": {
+                "method": "GET",
+                "url": "http://localhost:3000/api/contacts"
+            }
+        },
+        {
+            "name": "POST Contact (no token → 401)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"Unauthorized User\",\n  \"email\": \"unauth@example.com\",\n  \"phone\": \"+380500000000\"\n}"
+                },
+                "url": "http://localhost:3000/api/contacts"
+            }
+        },
+        {
+            "name": "POST Contact (with token → 201)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"Alice Owner\",\n  \"email\": \"alice.owner@example.com\",\n  \"phone\": \"+380501234567\"\n}"
+                },
+                "url": "http://localhost:3000/api/contacts"
+            }
+        },
+        {
+            "name": "GET Contacts (only my contacts → 200)",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "url": "http://localhost:3000/api/contacts"
+            }
+        },
+        {
+            "name": "GET Contact by ID (my contact → 200)",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "url": "http://localhost:3000/api/contacts/{{contactId}}"
+            }
+        },
+        {
+            "name": "GET Contact by ID (other user’s contact → 404)",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{otherToken}}"
+                    }
+                ],
+                "url": "http://localhost:3000/api/contacts/{{contactId}}"
+            }
+        },
+        {
+            "name": "DELETE Contact (my contact → 200)",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "url": "http://localhost:3000/api/contacts/{{contactId}}"
+            }
+        },
+        {
+            "name": "DELETE Contact (other user’s contact → 404)",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{otherToken}}"
+                    }
+                ],
+                "url": "http://localhost:3000/api/contacts/{{contactId}}"
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "token",
+            "value": ""
+        },
+        {
+            "key": "otherToken",
+            "value": ""
+        },
+        {
+            "key": "contactId",
+            "value": ""
+        }
+    ]
+}

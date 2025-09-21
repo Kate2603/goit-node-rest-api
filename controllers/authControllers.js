@@ -1,103 +1,73 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
 const HttpError = require("../helpers/HttpError");
+const userServices = require("../services/userServices");
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
-// ----------------- REGISTER -----------------
 async function register(req, res, next) {
   try {
     const { email, password } = req.body;
+    if (!email || !password) throw HttpError(400, "Validation error");
 
-    if (!email || !password) {
-      throw HttpError(400, "Validation error");
-    }
-
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      throw HttpError(409, "Email in use");
-    }
+    const existingUser = await userServices.findUserByEmail(email);
+    if (existingUser) throw HttpError(409, "Email in use");
 
     const hashPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ email, password: hashPassword });
+    const newUser = await userServices.createUser({
+      email,
+      password: hashPassword,
+    });
 
     res.status(201).json({
-      user: {
-        email: newUser.email,
-        subscription: newUser.subscription,
-      },
+      user: { email: newUser.email, subscription: newUser.subscription },
     });
   } catch (error) {
     next(error);
   }
 }
 
-// ----------------- LOGIN -----------------
 async function login(req, res, next) {
   try {
     const { email, password } = req.body;
+    if (!email || !password) throw HttpError(400, "Validation error");
 
-    if (!email || !password) {
-      throw HttpError(400, "Validation error");
-    }
-
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
-      throw HttpError(401, "Email or password is wrong");
-    }
+    const user = await userServices.findUserByEmail(email);
+    if (!user) throw HttpError(401, "Email or password is wrong");
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      throw HttpError(401, "Email or password is wrong");
-    }
+    if (!isPasswordValid) throw HttpError(401, "Email or password is wrong");
 
     const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: "1h" });
-    user.token = token;
-    await user.save();
+    await userServices.updateUserToken(user.id, token);
 
     res.json({
       token,
-      user: {
-        email: user.email,
-        subscription: user.subscription,
-      },
+      user: { email: user.email, subscription: user.subscription },
     });
   } catch (error) {
     next(error);
   }
 }
 
-// ----------------- LOGOUT -----------------
 async function logout(req, res, next) {
   try {
-    const user = req.user;
+    if (!req.user) throw HttpError(401, "Not authorized");
 
-    if (!user) {
-      throw HttpError(401, "Not authorized");
-    }
-
-    user.token = null;
-    await user.save();
-
+    await userServices.updateUserToken(req.user.id, null);
     res.status(204).send();
   } catch (error) {
     next(error);
   }
 }
 
-// ----------------- CURRENT -----------------
 async function getCurrent(req, res, next) {
   try {
-    const user = req.user;
-
-    if (!user) {
-      throw HttpError(401, "Not authorized");
-    }
+    if (!req.user) throw HttpError(401, "Not authorized");
 
     res.json({
-      email: user.email,
-      subscription: user.subscription,
+      email: req.user.email,
+      subscription: req.user.subscription,
     });
   } catch (error) {
     next(error);
@@ -107,19 +77,18 @@ async function getCurrent(req, res, next) {
 async function updateSubscription(req, res, next) {
   try {
     const { subscription } = req.body;
-
-    // Перевіряємо, що передане правильне значення
     if (!["starter", "pro", "business"].includes(subscription)) {
       return res.status(400).json({ message: "Invalid subscription type" });
     }
 
-    const user = req.user;
-    user.subscription = subscription;
-    await user.save();
+    const updatedUser = await userServices.updateUserSubscription(
+      req.user.id,
+      subscription
+    );
 
     res.json({
-      email: user.email,
-      subscription: user.subscription,
+      email: updatedUser.email,
+      subscription: updatedUser.subscription,
     });
   } catch (error) {
     next(error);
