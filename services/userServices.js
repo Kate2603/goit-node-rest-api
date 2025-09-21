@@ -28,10 +28,19 @@ async function updateUserSubscription(id, subscription) {
   return user;
 }
 
+async function updateUserAvatar(id, avatarURL) {
+  const [count, users] = await User.update(
+    { avatarURL },
+    { where: { id }, returning: true }
+  );
+  return count > 0 ? users[0] : null;
+}
+
 module.exports = {
   findUserByEmail,
   createUser,
   findUserById,
   updateUserToken,
   updateUserSubscription,
+  updateUserAvatar,
 };
