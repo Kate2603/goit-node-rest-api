@@ -1,34 +1,40 @@
 const Contact = require("../models/contact");
 
-async function listContacts() {
-  return await Contact.findAll();
+// Отримати всі контакти користувача
+async function listContacts(owner) {
+  return await Contact.findAll({ where: { owner } });
 }
 
-async function getContactById(id) {
-  return await Contact.findByPk(id);
+// Отримати контакт за ID + owner
+async function getContactById(id, owner) {
+  return await Contact.findOne({ where: { id, owner } });
 }
 
-async function removeContact(id) {
-  const contact = await Contact.findByPk(id);
+// Видалити контакт за ID + owner
+async function removeContact(id, owner) {
+  const contact = await Contact.findOne({ where: { id, owner } });
   if (!contact) return null;
   await contact.destroy();
   return contact;
 }
 
-async function addContact(data) {
-  return await Contact.create(data);
+// Додати новий контакт з owner
+async function addContact(data, owner) {
+  return await Contact.create({ ...data, owner });
 }
 
-async function updateContact(id, data) {
-  const contact = await Contact.findByPk(id);
+// Оновити контакт за ID + owner
+async function updateContact(id, data, owner) {
+  const contact = await Contact.findOne({ where: { id, owner } });
   if (!contact) return null;
   return await contact.update(data);
 }
 
-async function updateStatusContact(id, data) {
-  const contact = await Contact.findByPk(id);
+// Оновити статус favorite за ID + owner
+async function updateStatusContact(id, favorite, owner) {
+  const contact = await Contact.findOne({ where: { id, owner } });
   if (!contact) return null;
-  return await contact.update({ favorite: data.favorite });
+  return await contact.update({ favorite });
 }
 
 module.exports = {
