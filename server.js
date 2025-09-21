@@ -1,14 +1,19 @@
 require("dotenv").config();
 const app = require("./app");
-const { connectDB, sequelize } = require("./db");
+const { connectDB } = require("./db");
+
+const PORT = process.env.PORT || 3000;
 
 async function startServer() {
-  await connectDB();
-  await sequelize.sync();
-
-  app.listen(3000, () => {
-    console.log("Server running on port 3000");
-  });
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error.message);
+    process.exit(1);
+  }
 }
 
 startServer();

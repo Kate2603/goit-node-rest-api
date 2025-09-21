@@ -1,0 +1,226 @@
+{
+    "info": {
+        "name": "Auth + Email Verification API (Full Tests)",
+        "_postman_id": "verify-auto-collection-99999",
+        "description": "Collection with full tests for register, verify, resend email, and login flow",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Register (with email verification)",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 201\", function () {",
+                            "    pm.response.to.have.status(201);",
+                            "});",
+                            "",
+                            "const res = pm.response.json();",
+                            "pm.test(\"Response has user with email and subscription\", function () {",
+                            "    pm.expect(res).to.have.property(\"user\");",
+                            "    pm.expect(res.user).to.have.property(\"email\");",
+                            "    pm.expect(res.user).to.have.property(\"subscription\");",
+                            "});",
+                            "",
+                            "if (res.user && res.user.verificationToken) {",
+                            "  pm.collectionVariables.set(\"verificationToken\", res.user.verificationToken);",
+                            "  console.log(\"✅ Saved verificationToken:\", res.user.verificationToken);",
+                            "} else {",
+                            "  console.log(\"⚠️ No verificationToken in response\");",
+                            "}"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"verifyuser@example.com\",\n  \"password\": \"123456\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3000/api/auth/register",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "auth",
+                        "register"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Verify Email",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200 or 404\", function () {",
+                            "    pm.expect([200, 404]).to.include(pm.response.code);",
+                            "});",
+                            "",
+                            "const res = pm.response.json();",
+                            "if (pm.response.code === 200) {",
+                            "    pm.test(\"Verification successful message\", function () {",
+                            "        pm.expect(res).to.have.property(\"message\", \"Verification successful\");",
+                            "    });",
+                            "} else if (pm.response.code === 404) {",
+                            "    pm.test(\"User not found message\", function () {",
+                            "        pm.expect(res).to.have.property(\"message\", \"User not found\");",
+                            "    });",
+                            "}"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://localhost:3000/api/auth/verify/{{verificationToken}}",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "auth",
+                        "verify",
+                        "{{verificationToken}}"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Resend Verification Email",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200 or 400\", function () {",
+                            "    pm.expect([200, 400]).to.include(pm.response.code);",
+                            "});",
+                            "",
+                            "const res = pm.response.json();",
+                            "if (pm.response.code === 200) {",
+                            "    pm.test(\"Verification email sent message\", function () {",
+                            "        pm.expect(res).to.have.property(\"message\", \"Verification email sent\");",
+                            "    });",
+                            "} else if (pm.response.code === 400) {",
+                            "    pm.test(\"Already verified message\", function () {",
+                            "        pm.expect(res).to.have.property(\"message\");",
+                            "        pm.expect(res.message).to.match(/Verification has already been passed|missing required field email/);",
+                            "    });",
+                            "}"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"verifyuser@example.com\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3000/api/auth/verify",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "auth",
+                        "verify"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Login (only after verify)",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "",
+                            "const res = pm.response.json();",
+                            "pm.test(\"Response has token\", function () {",
+                            "    pm.expect(res).to.have.property(\"token\");",
+                            "    pm.expect(typeof res.token).to.eql(\"string\");",
+                            "});",
+                            "",
+                            "pm.test(\"Response has user with email and subscription\", function () {",
+                            "    pm.expect(res).to.have.property(\"user\");",
+                            "    pm.expect(res.user).to.have.property(\"email\");",
+                            "    pm.expect(res.user).to.have.property(\"subscription\");",
+                            "    pm.expect(typeof res.user.email).to.eql(\"string\");",
+                            "    pm.expect(typeof res.user.subscription).to.eql(\"string\");",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"verifyuser@example.com\",\n  \"password\": \"123456\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3000/api/auth/login",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "auth",
+                        "login"
+                    ]
+                }
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "verificationToken",
+            "value": ""
+        }
+    ]
+}

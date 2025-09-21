@@ -1,12 +1,13 @@
 const { Sequelize } = require("sequelize");
+require("dotenv").config();
 
 const sequelize = new Sequelize(
-  "contacts_5elx",
-  "contacts_5elx_user",
-  "Ln6FgXaKndUd889rbvSmwFQcqgz2hyEe",
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
   {
-    host: "dpg-d36t53nfte5s73aoc7q0-a.oregon-postgres.render.com",
-    port: 5432,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 5432,
     dialect: "postgres",
     logging: false,
     dialectOptions: {
@@ -21,9 +22,10 @@ const sequelize = new Sequelize(
 async function connectDB() {
   try {
     await sequelize.authenticate();
-    console.log("✅ Database connection successful");
+    console.log("✅ Database connection successful (Render)");
 
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
+    console.log("✅ Tables synchronized");
   } catch (error) {
     console.error("❌ Database connection error:", error.message);
     process.exit(1);

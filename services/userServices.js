@@ -4,42 +4,44 @@ async function findUserByEmail(email) {
   return await User.findOne({ where: { email } });
 }
 
-async function createUser(data) {
-  return await User.create(data);
-}
-
 async function findUserById(id) {
   return await User.findByPk(id);
 }
 
+async function findUserByVerificationToken(verificationToken) {
+  return await User.findOne({ where: { verificationToken } });
+}
+
+async function createUser(data) {
+  return await User.create(data);
+}
+
+async function updateUser(id, data) {
+  const [count, rows] = await User.update(data, {
+    where: { id },
+    returning: true,
+  });
+  return count ? rows[0] : null;
+}
+
 async function updateUserToken(id, token) {
-  const user = await User.findByPk(id);
-  if (!user) return null;
-  user.token = token;
-  await user.save();
-  return user;
+  return await updateUser(id, { token });
 }
 
 async function updateUserSubscription(id, subscription) {
-  const user = await User.findByPk(id);
-  if (!user) return null;
-  user.subscription = subscription;
-  await user.save();
-  return user;
+  return await updateUser(id, { subscription });
 }
 
 async function updateUserAvatar(id, avatarURL) {
-  const [count, users] = await User.update(
-    { avatarURL },
-    { where: { id }, returning: true }
-  );
-  return count > 0 ? users[0] : null;
+  return await updateUser(id, { avatarURL });
 }
 
 module.exports = {
   findUserByEmail,
-  createUser,
   findUserById,
+  findUserByVerificationToken,
+  createUser,
+  updateUser,
   updateUserToken,
   updateUserSubscription,
   updateUserAvatar,
